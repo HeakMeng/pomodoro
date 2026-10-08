@@ -54,10 +54,14 @@ export function SettingsModal({ open, settings, onClose, onSave }: Props) {
 
   useEffect(() => {
     if (open) {
+      // Re-sync the form fields to the latest settings each time the modal
+      // opens. Intentional prop->state sync, hence the scoped rule disable.
+      /* eslint-disable react-hooks/set-state-in-effect */
       setFocus(String(settings.focus));
       setShort(String(settings.short));
       setLong(String(settings.long));
       setPushError(null);
+      /* eslint-enable react-hooks/set-state-in-effect */
       void refreshPushState();
     }
   }, [open, settings, refreshPushState]);
@@ -137,16 +141,16 @@ export function SettingsModal({ open, settings, onClose, onSave }: Props) {
       />
       <form
         onSubmit={handleSubmit}
-        className="relative w-full max-w-sm rounded-3xl bg-white p-6 shadow-xl dark:bg-zinc-900"
+        className="panel relative w-full max-w-sm rounded-3xl p-6"
       >
         <h2
           id="settings-title"
-          className="mb-5 text-base font-semibold uppercase tracking-widest text-zinc-900 dark:text-zinc-100"
+          className="t-strong mb-5 text-base font-semibold uppercase tracking-widest"
         >
           Settings
         </h2>
 
-        <p className="mb-3 text-xs uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+        <p className="t-faint mb-3 text-xs uppercase tracking-widest">
           Minutes per mode
         </p>
 
@@ -156,16 +160,19 @@ export function SettingsModal({ open, settings, onClose, onSave }: Props) {
           <Field label="Long Break" value={long} onChange={setLong} id="settings-long" />
         </div>
 
-        <p className="mb-2 text-xs uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+        <p className="t-faint mb-2 text-xs uppercase tracking-widest">
           Notifications
         </p>
 
-        <div className="mb-6 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800/60">
-          <p className="mb-3 text-xs text-zinc-600 dark:text-zinc-300">
+        <div
+          className="surface-sunken mb-6 rounded-2xl border p-4"
+          style={{ borderColor: "var(--border-soft)" }}
+        >
+          <p className="t-muted mb-3 text-xs">
             {notifLabel}
           </p>
           {pushError && (
-            <p className="mb-3 text-xs text-rose-600 dark:text-rose-400">
+            <p className="mb-3 text-xs text-rose-400">
               {pushError}
             </p>
           )}
@@ -178,9 +185,7 @@ export function SettingsModal({ open, settings, onClose, onSave }: Props) {
               pushState === "denied"
             }
             className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-              subscribed
-                ? "border border-zinc-300 bg-white text-zinc-800 hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
-                : "bg-brand-navy text-white hover:bg-brand-blue dark:bg-ai-cyan dark:text-brand-navy dark:hover:bg-ai-cyan-light"
+              subscribed ? "btn-ghost" : "btn-primary"
             }`}
           >
             {subscribed ? (
@@ -201,13 +206,13 @@ export function SettingsModal({ open, settings, onClose, onSave }: Props) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-zinc-300 px-5 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
+            className="btn-ghost rounded-full px-5 py-2 text-sm font-medium"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="rounded-full bg-brand-navy px-5 py-2 text-sm font-medium text-white hover:bg-brand-blue dark:bg-ai-cyan dark:text-brand-navy dark:hover:bg-ai-cyan-light"
+            className="btn-primary rounded-full px-5 py-2 text-sm font-medium"
           >
             Save
           </button>
@@ -230,7 +235,7 @@ function Field({
 }) {
   return (
     <label htmlFor={id} className="flex items-center justify-between gap-4">
-      <span className="text-sm text-zinc-700 dark:text-zinc-300">{label}</span>
+      <span className="t-muted text-sm">{label}</span>
       <input
         id={id}
         type="number"
@@ -238,7 +243,7 @@ function Field({
         max={BOUNDS.max}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-20 rounded-full border border-zinc-300 bg-white px-3 py-1.5 text-right text-sm text-zinc-900 focus:border-brand-blue focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-ai-cyan"
+        className="field w-20 rounded-full px-3 py-1.5 text-right text-sm"
       />
     </label>
   );
