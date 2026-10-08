@@ -4,8 +4,8 @@ import {
   ListTodo,
   Moon,
   Settings as SettingsIcon,
+  Shield,
   Sun,
-  Target,
   Timer as TimerIcon,
   type LucideIcon,
 } from "lucide-react";
@@ -31,14 +31,19 @@ const NAV_ITEMS: NavItem[] = [
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  // Flip after mount (next frame) to avoid a hydration mismatch on the icon,
+  // without synchronously setting state inside the effect body.
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
   const isDark = mounted && resolvedTheme === "dark";
   return (
     <button
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      className="flex h-10 w-10 items-center justify-center rounded-full text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-brand-blue dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-ai-cyan"
+      className="icon-btn flex h-10 w-10 items-center justify-center rounded-full transition-colors"
     >
       {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
     </button>
@@ -47,15 +52,15 @@ function ThemeToggle() {
 
 function Brand() {
   return (
-    <Link
-      href="/"
-      className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100"
-    >
-      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-navy text-ai-cyan-light shadow-sm">
-        <Target className="h-5 w-5" strokeWidth={2.25} />
+    <Link href="/" className="t-strong flex items-center gap-2">
+      <span
+        className="btn-primary flex h-9 w-9 items-center justify-center rounded-xl"
+        aria-hidden
+      >
+        <Shield className="h-5 w-5" strokeWidth={2.25} />
       </span>
-      <span className="text-sm font-semibold uppercase tracking-widest">
-        Pomodoro
+      <span className="text-sm font-semibold uppercase tracking-[0.2em]">
+        Avengers
       </span>
     </Link>
   );
@@ -64,7 +69,14 @@ function Brand() {
 function Sidebar({ pathname }: { pathname: string }) {
   const { openSettings } = useAppState();
   return (
-    <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:z-30 md:flex md:w-60 md:flex-col md:border-r md:border-zinc-100 md:bg-white md:px-5 md:py-6 dark:md:border-zinc-800 dark:md:bg-zinc-950">
+    <aside
+      className="hidden md:fixed md:inset-y-0 md:left-0 md:z-30 md:flex md:w-60 md:flex-col md:border-r md:px-5 md:py-6"
+      style={{
+        background: "var(--surface)",
+        borderColor: "var(--sidebar-border)",
+        boxShadow: "var(--sidebar-shadow)",
+      }}
+    >
       <Brand />
 
       <nav className="mt-10 flex flex-1 flex-col gap-1">
@@ -77,9 +89,7 @@ function Sidebar({ pathname }: { pathname: string }) {
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-                active
-                  ? "bg-ai-cyan-light text-brand-navy dark:bg-brand-navy dark:text-ai-cyan"
-                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+                active ? "nav-item-active" : "nav-item"
               }`}
             >
               <Icon className="h-4 w-4" />
@@ -89,13 +99,16 @@ function Sidebar({ pathname }: { pathname: string }) {
         })}
       </nav>
 
-      <div className="mt-auto flex items-center gap-1 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+      <div
+        className="mt-auto flex items-center gap-1 border-t pt-4"
+        style={{ borderColor: "var(--border-soft)" }}
+      >
         <ThemeToggle />
         <button
           type="button"
           onClick={openSettings}
           aria-label="Open settings"
-          className="flex h-10 w-10 items-center justify-center rounded-full text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-brand-blue dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-ai-cyan"
+          className="icon-btn flex h-10 w-10 items-center justify-center rounded-full transition-colors"
         >
           <SettingsIcon className="h-5 w-5" />
         </button>
@@ -107,7 +120,13 @@ function Sidebar({ pathname }: { pathname: string }) {
 function MobileTopBar() {
   const { openSettings } = useAppState();
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between border-b border-zinc-100 bg-white px-4 py-3 md:hidden dark:border-zinc-800 dark:bg-zinc-950">
+    <header
+      className="sticky top-0 z-20 flex items-center justify-between border-b px-4 py-3 md:hidden"
+      style={{
+        background: "var(--surface)",
+        borderColor: "var(--border-soft)",
+      }}
+    >
       <Brand />
       <div className="flex items-center gap-1">
         <ThemeToggle />
@@ -115,7 +134,7 @@ function MobileTopBar() {
           type="button"
           onClick={openSettings}
           aria-label="Open settings"
-          className="flex h-10 w-10 items-center justify-center rounded-full text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-brand-blue dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-ai-cyan"
+          className="icon-btn flex h-10 w-10 items-center justify-center rounded-full transition-colors"
         >
           <SettingsIcon className="h-5 w-5" />
         </button>
@@ -128,7 +147,11 @@ function MobileTabBar({ pathname }: { pathname: string }) {
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-20 flex border-t border-zinc-100 bg-white pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 md:hidden dark:border-zinc-800 dark:bg-zinc-950"
+      className="fixed inset-x-0 bottom-0 z-20 flex border-t pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 md:hidden"
+      style={{
+        background: "var(--surface)",
+        borderColor: "var(--border-soft)",
+      }}
     >
       {NAV_ITEMS.map((item) => {
         const Icon = item.icon;
@@ -139,9 +162,7 @@ function MobileTabBar({ pathname }: { pathname: string }) {
             href={item.href}
             aria-current={active ? "page" : undefined}
             className={`flex flex-1 flex-col items-center gap-0.5 py-1 text-[11px] font-medium transition-colors ${
-              active
-                ? "text-brand-blue dark:text-ai-cyan"
-                : "text-zinc-500 dark:text-zinc-400"
+              active ? "t-accent" : "t-faint"
             }`}
           >
             <Icon className="h-5 w-5" />
@@ -162,8 +183,8 @@ export function Shell({ children }: { children: ReactNode }) {
       <Sidebar pathname={pathname} />
       <div className="flex min-h-screen flex-1 flex-col md:pl-60">
         <MobileTopBar />
-        <main className="flex-1 px-4 pb-24 pt-6 sm:px-6 md:pb-10 md:pt-10">
-          <div className="mx-auto w-full max-w-2xl">{children}</div>
+        <main className="flex flex-1 flex-col items-center justify-center px-4 pb-24 pt-6 sm:px-6 md:pb-10 md:pt-10">
+          {children}
         </main>
       </div>
       <MobileTabBar pathname={pathname} />

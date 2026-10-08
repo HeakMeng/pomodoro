@@ -7,23 +7,278 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-hornset);
   --font-mono: var(--font-geist-mono);
-  --color-brand-navy: #0b2e6d;
-  --color-brand-blue: #123f8f;
-  --color-ai-cyan: #08a8e8;
-  --color-ai-cyan-light: #e8f7fd;
+
+  /* Avengers / Marvel palette (used by dark-mode tokens below) */
+  --color-marvel-red: #e62429;
+  --color-marvel-red-dark: #9b1216;
+  --color-marvel-gold: #f0b429;
+  --color-marvel-gold-light: #ffd666;
+  --color-marvel-blue: #2d6cdf;
+  --color-hero-bg: #070a14;
+  --color-hero-panel: #0d1222;
 }
 
+/*
+ * LIGHT MODE — "Stark Tech / TVA": crisp white surfaces, silver borders,
+ * glowing cyan/blue active accents on a bright light-gray backdrop.
+ */
 :root {
-  --background: #ffffff;
+  --background: #eef1f6;
   --foreground: #0b1220;
+
+  --surface: #ffffff;
+  --surface-sunken: #eef1f7;
+  --surface-raised: #f6f8fc;
+
+  --border-soft: #dfe3ea; /* silver */
+  --border-strong: #c6ccd8;
+  --sidebar-border: #e5e7eb; /* gray-200 */
+
+  --text-strong: #0b1220;
+  --text-muted: #566072;
+  --text-faint: #8992a3;
+
+  /* Accent = Avengers red / gold (on bright Stark-lab surfaces) */
+  --accent: #e62429;
+  --accent-text: #c01d22;
+  --accent-soft: rgba(230, 36, 41, 0.1);
+  --accent-ring: rgba(230, 36, 41, 0.3);
+  --accent-from: #e62429;
+  --accent-to: #b0161b;
+  --accent-glow: rgba(230, 36, 41, 0.3);
+
+  --ring-track: rgba(11, 18, 32, 0.08);
+  --ring-from: #e62429;
+  --ring-via: #f0b429;
+  --ring-to: #ff7a3c;
+  --ring-glow: rgba(230, 36, 41, 0.35);
+
+  --glow-1: rgba(230, 36, 41, 0.12);
+  --glow-2: rgba(240, 180, 41, 0.1);
+  --glow-3: rgba(230, 36, 41, 0.08);
+
+  --hover-soft: rgba(11, 18, 32, 0.04);
+  --hover-strong: rgba(11, 18, 32, 0.07);
+
+  --panel-shadow: 0 12px 30px -12px rgba(15, 23, 42, 0.18);
+  --sidebar-shadow: none;
 }
 
+/*
+ * DARK MODE — cinematic Avengers: deep space surfaces, red/gold accents.
+ */
 .dark {
-  --background: #0a0f1a;
-  --foreground: #e5e7eb;
+  --background: #070a14;
+  --foreground: #eef2ff;
+
+  --surface: #0d1222;
+  --surface-sunken: rgba(0, 0, 0, 0.3);
+  --surface-raised: rgba(255, 255, 255, 0.05);
+
+  --border-soft: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --sidebar-border: rgba(127, 29, 29, 0.3); /* glowing red-900/30 */
+
+  --text-strong: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.55);
+  --text-faint: rgba(255, 255, 255, 0.4);
+
+  /* Accent = Marvel red / gold */
+  --accent: #e62429;
+  --accent-text: #f0b429;
+  --accent-soft: rgba(230, 36, 41, 0.15);
+  --accent-ring: rgba(240, 180, 41, 0.5);
+  --accent-from: #e62429;
+  --accent-to: #9b1216;
+  --accent-glow: rgba(230, 36, 41, 0.3);
+
+  --ring-track: rgba(255, 255, 255, 0.08);
+  --ring-from: #e62429;
+  --ring-via: #f0b429;
+  --ring-to: #ffd666;
+  --ring-glow: rgba(240, 180, 41, 0.45);
+
+  --glow-1: rgba(230, 36, 41, 0.25);
+  --glow-2: rgba(240, 180, 41, 0.15);
+  --glow-3: rgba(45, 108, 223, 0.15);
+
+  --hover-soft: rgba(255, 255, 255, 0.05);
+  --hover-strong: rgba(255, 255, 255, 0.1);
+
+  --panel-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.6);
+  --sidebar-shadow: 2px 0 24px -8px rgba(230, 36, 41, 0.25);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
 }
+
+/* ---- Themed component primitives (flip automatically via CSS vars) ---- */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--panel-shadow);
+}
+.surface-sunken {
+  background: var(--surface-sunken);
+}
+
+.t-strong {
+  color: var(--text-strong);
+}
+.t-muted {
+  color: var(--text-muted);
+}
+.t-faint {
+  color: var(--text-faint);
+}
+.t-accent {
+  color: var(--accent-text);
+}
+
+.field {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-soft);
+  color: var(--text-strong);
+}
+.field::placeholder {
+  color: var(--text-faint);
+}
+.field:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.btn-primary {
+  background-image: linear-gradient(
+    to right,
+    var(--accent-from),
+    var(--accent-to)
+  );
+  color: #fff;
+  box-shadow: 0 10px 25px -6px var(--accent-glow);
+}
+.btn-primary:hover {
+  filter: brightness(1.08);
+}
+
+.btn-ghost {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-soft);
+  color: var(--text-strong);
+}
+.btn-ghost:hover {
+  background: var(--hover-strong);
+}
+
+.pill {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-soft);
+  color: var(--text-muted);
+}
+.pill:hover {
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.icon-btn {
+  color: var(--text-muted);
+}
+.icon-btn:hover {
+  background: var(--hover-strong);
+  color: var(--accent-text);
+}
+
+.tab-active {
+  background-image: linear-gradient(
+    to right,
+    var(--accent-from),
+    var(--accent-to)
+  );
+  color: #fff;
+  box-shadow: 0 6px 18px -6px var(--accent-glow);
+}
+.tab-inactive {
+  color: var(--text-muted);
+}
+.tab-inactive:hover {
+  color: var(--text-strong);
+}
+
+/* Task tiles */
+.task-tile {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-soft);
+}
+.task-tile:hover {
+  border-color: var(--border-strong);
+  background: var(--hover-soft);
+}
+.task-tile-active {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  box-shadow: 0 10px 24px -12px var(--accent-glow);
+}
+
+.mini-btn {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-soft);
+  color: var(--text-muted);
+}
+.mini-btn:hover {
+  color: var(--accent-text);
+}
+.mini-btn-danger:hover {
+  color: #fb7185;
+}
+
+/* Nav item (sidebar / tab bar) */
+.nav-item {
+  color: var(--text-muted);
+}
+.nav-item:hover {
+  background: var(--hover-soft);
+  color: var(--text-strong);
+}
+.nav-item-active {
+  background: var(--accent-soft);
+  color: var(--text-strong);
+  box-shadow: inset 0 0 0 1px var(--accent-ring);
+}
+
+/* Subtle "assemble" glow behind the timer stage */
+@keyframes hero-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.04);
+  }
+}
+
+.animate-hero-pulse {
+  animation: hero-pulse 6s ease-in-out infinite;
+}
+
+/* Equalizer bars for the now-playing indicator */
+@keyframes eq-bounce {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.eq-bar {
+  transform-origin: bottom;
+  animation: eq-bounce 0.9s ease-in-out infinite;
+}
+
+/* theme: avengers red (light + dark) */
